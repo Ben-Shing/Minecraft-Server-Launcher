@@ -83,7 +83,7 @@ echo ^<System^> %ESC%[36mChanging to Java 8%ESC%[0m
 set JAVA_HOME=%java8%
 set Path=%JAVA_HOME%\bin
 echo ^<System^> %ESC%[32mStarting Version 3 Server Launcher......%ESC%[0m
-java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar --bonusChest
+java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar
 goto stoped
 
 :version4
@@ -107,7 +107,7 @@ echo ^<System^> %ESC%[36mChanging to Java 17%ESC%[0m
 set JAVA_HOME=%java17%
 set Path=%JAVA_HOME%\bin
 echo ^<System^> %ESC%[32mStarting Version 6 Server Launcher......%ESC%[0m
-java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar --bonusChest
+java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar
 goto stoped
 
 :version7
@@ -125,7 +125,7 @@ goto stoped
 :version9
 echo ^<System^> %ESC%[36mUsing default java%ESC%[0m
 echo ^<System^> %ESC%[32mStarting Version 9 Server Launcher......%ESC%[0m
-java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar --bonusChest
+java -Xms%min_ram% -Xmx%max_ram% -jar paper-%Paper_version%.jar
 goto stoped
 
 :stoped
