@@ -38,9 +38,9 @@ set max_ram=
 REM===================================
 ::Set Java Directory Here (Use a full directory like this: "C:\Program Files\Java\jre1.8.0_291")
 ::Java usually inside "C:\Program Files\Java\..."
-::Java 8 Directory (For version 1/2)
+::Java 8 Directory (For Minecraft 1.12-1.16)
 set java8=
-::Java 17 Directory (For version 3/4)
+::Java 17 Directory (For minecraft 1.18+)
 set java17=
 REM===================================
 
