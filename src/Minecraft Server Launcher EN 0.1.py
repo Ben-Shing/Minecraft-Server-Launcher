@@ -85,21 +85,21 @@ if again:
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
-            logging.error('No Java Directory Found')
+            logging.error('No Java 8 Directory Found')
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
-            logging.error('No Java Directory Found')
+            logging.error('No Java 17 Directory Found')
     if version in [2,5,8]:
         logging.info('Checking Forge Version')
         if forgeVersion == "":
             again = False
             logging.error('No Forge Version Found')
     if version in [3,6,9]:
-        logging.info('Checking Paper Version')
+        logging.info('Checking PaperMC Version')
         if paperVersion == "":
             again = False
-            logging.error('No Paper Version Found')
+            logging.error('No PaperMC Version Found')
 
 
 while again: # Server Loop
