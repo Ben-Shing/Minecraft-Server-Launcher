@@ -125,10 +125,10 @@ if again:
 
 # Check ram setting
 if minRam == "":
-    logging.info('Missing minRam value, setting minRam to ' + defaultRam[0])
+    logging.info('缺少最少分配記憶體，設定成預設：' + defaultRam[0])
     minRam = defaultRam[0]
 if maxRam == "":
-    logging.info('Missing MaxRam Value, setting maxRam to ' + defaultRam[1])
+    logging.info('缺少最大分配記憶體，設定成預設：' + defaultRam[1])
     maxRam = defaultRam[1]
 
 # Pause before exit
@@ -155,7 +155,7 @@ while again: # Server Loop
     logging.info('伺服器已停止')
     # Ask for run again
     again = True
-    logging.info("Start again?(Y/N): ")
+    logging.info("是否再次啟動伺服器？(Y/N)：")
     answer = cmd_choice()
     if answer == 'N':
         again = False
