@@ -1,4 +1,14 @@
 #################################################################################################
+# 加載功能
+# 無需編輯
+import subprocess
+import os
+import time
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
+version = 0
+#################################################################################################
 # Minecraft伺服器啟動器(Python) 0.1
 # 這是由Python編寫的腳本
 # 這個腳本帶有自動重啟伺服器功能，伺服器崩潰或停止時會在15秒後自動重啟
@@ -26,15 +36,15 @@ serverName = "Minecraft伺服器啟動器(Python) 0.1"
 #version=9 #--> Using Default Java (PaperMC)
 ##################################################
 # Forge伺服器專用 (Minecraft版本-Forge版本)
-Forge_version = ""
+forgeVersion = ""
 ##################################################
 # PaperMC伺服器專用 (Minecraft版本-PaperMC版本)
-Paper_version = ""
+paperVersion = ""
 ##################################################
 # 最少記憶體
-min_ram = ""
+minRam = ""
 # 最大記憶體
-max_ram = ""
+maxRam = ""
 # 例子: 512M / 8G
 # M=Megabyte
 # G=Gigabyte
@@ -50,17 +60,9 @@ java17 = ""
 #下面的程式碼會執行伺服器代碼，你不會需要修改下面的東西
 #
 
-import subprocess
-import os
-import time
-import logging
-
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-
 ##################################################
 
 logging.info('正在初始化' + serverName)
-
 
 os.environ["JAVA_HOME"] = ""
 os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
@@ -68,12 +70,48 @@ os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
 again = True
 ##################################################
 
-while again:
 
+# Check version
+logging.info('Checking Launcher Version')
+if version == 0:
+    logging.error('No Server Version Selected')
+    again = False
+elif version < 0 or version > 9: 
+    logging.error('Uncorrect Version Selected')
+    again = False
+
+# Check java
+if again:
+    logging.info('Checking Java Directory')
+    if version in range(1,3,1): # version 1,2,3
+        if java8 == "":
+            again = False
+            logging.error('No Java Directory Found')
+    if version in range(4,6,1): # version 4,5,6
+        if java17 == "":
+            again = False
+            logging.error('No Java Directory Found')
+    if version in [2,5,8]:
+        logging.info('Checking Forge Version')
+        if forgeVersion == "":
+            again = False
+            logging.error('No Forge Version Found')
+    if version in [3,6,9]:
+        logging.info('Checking Paper Version')
+        if paperVersion == "":
+            again = False
+            logging.error('No Paper Version Found')
+
+
+while again: # Server Loop
+    again = False
+    
+    # Start Server
     logging.info('正在啟動伺服器')
-    subprocess.run(["java", "-Xms" + min_ram, "-Xmx" + max_ram, "-jar", "server.jar", "--bonusChest"])
-
+    subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    # Server Stopped
     logging.info('伺服器已停止')
+    # Ask for run again
     again = True
     answer = input("是否再次啟動伺服器？(Y/N)：")
     for i in range(15):
@@ -84,5 +122,6 @@ while again:
     if again:
         logging.info('即將重新啟動伺服器')
 
+# Stopping Script
 logging.info('正在停止' + serverName)
 exit()

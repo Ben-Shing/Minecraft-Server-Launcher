@@ -1,4 +1,14 @@
 #################################################################################################
+# Importing dependents
+# No need to edit
+import subprocess
+import os
+import time
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
+version = 0
+#################################################################################################
 # Minecraft Server Launcher(Python) 0.1
 # This is a Python script
 # The script will automatically restart the server when server stoped
@@ -15,26 +25,26 @@
 serverName = "Minecraft Server Launcher(Python) 0.1"
 ##################################################
 # Uncomment the version you needed
-#version=1 #--> Minecraft 1.12-1.16
-#version=2 #--> Minecraft 1.12-1.16 (Forge)
-#version=3 #--> Minecraft 1.12-1.16 (PaperMC)
-#version=4 #--> Minecraft 1.18+
-#version=5 #--> Minecraft 1.18+ (Forge)
-#version=6 #--> Minecraft 1.18+ (PaperMC)
-#version=7 #--> Using Default Java
-#version=8 #--> Using Default Java (Forge)
-#version=9 #--> Using Default Java (PaperMC)
+#version = 1 #--> Minecraft 1.12-1.16
+#version = 2 #--> Minecraft 1.12-1.16 (Forge)
+#version = 3 #--> Minecraft 1.12-1.16 (PaperMC)
+#version = 4 #--> Minecraft 1.18+
+#version = 5 #--> Minecraft 1.18+ (Forge)
+#version = 6 #--> Minecraft 1.18+ (PaperMC)
+#version = 7 #--> Using Default Java
+#version = 8 #--> Using Default Java (Forge)
+#version = 9 #--> Using Default Java (PaperMC)
 ##################################################
 # Forge Server Only (MinecraftVersion-ForgeVersion)
-Forge_version = ""
+forgeVersion = ""
 ##################################################
 # PaperMC Server Only (MinecraftVersion-PaperMCVersion)
-Paper_version = ""
+paperVersion = ""
 ##################################################
 # Minimum Ram
-min_ram = ""
+minRam = ""
 # Maximum Ram
-max_ram = ""
+maxRam = ""
 # Example: 512M / 8G
 # M=Megabyte
 # G=Gigabyte
@@ -50,17 +60,9 @@ java17 = ""
 #The code below will run the server, nothing need to be edited
 #
 
-import subprocess
-import os
-import time
-import logging
-
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-
 ##################################################
 
 logging.info('Initializing ' + serverName)
-
 
 os.environ["JAVA_HOME"] = ""
 os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
@@ -68,12 +70,47 @@ os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
 again = True
 ##################################################
 
-while again:
+# Check version
+logging.info('Checking Launcher Version')
+if version == 0:
+    logging.error('No Server Version Selected')
+    again = False
+elif version < 0 or version > 9: 
+    logging.error('Uncorrect Version Selected')
+    again = False
 
+# Check java
+if again:
+    logging.info('Checking Java Directory')
+    if version in range(1,3,1): # version 1,2,3
+        if java8 == "":
+            again = False
+            logging.error('No Java Directory Found')
+    if version in range(4,6,1): # version 4,5,6
+        if java17 == "":
+            again = False
+            logging.error('No Java Directory Found')
+    if version in [2,5,8]:
+        logging.info('Checking Forge Version')
+        if forgeVersion == "":
+            again = False
+            logging.error('No Forge Version Found')
+    if version in [3,6,9]:
+        logging.info('Checking Paper Version')
+        if paperVersion == "":
+            again = False
+            logging.error('No Paper Version Found')
+
+
+while again: # Server Loop
+    again = False
+    
+    # Start Server
     logging.info('Starting Server')
-    subprocess.run(["java", "-Xms" + min_ram, "-Xmx" + max_ram, "-jar", "server.jar", "--bonusChest"])
-
-    logging.info('Server Stoped')
+    subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    # Server Stopped
+    logging.info('Server Stopped')
+    # Ask for run again
     again = True
     answer = input("Start again?(Y/N): ")
     for i in range(15):
@@ -84,5 +121,6 @@ while again:
     if again:
         logging.info('Restarting Server')
 
-logging.info('Stoping ' + serverName)
+# Stopping Script
+logging.info('Stopping ' + serverName)
 exit()
