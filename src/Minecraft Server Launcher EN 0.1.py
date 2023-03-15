@@ -3,7 +3,6 @@
 # No need to edit
 import subprocess
 import os
-import time
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
@@ -11,7 +10,7 @@ version = 0
 #################################################################################################
 # Minecraft Server Launcher(Python) 0.1
 # This is a Python script
-# The script will automatically restart the server when server stoped
+# The script will automatically restart the server when server stoped (Currently not done)
 # To shutdown the server, use /stop in the server and type "N" when asking "Start again? (Y/N)"N"
 #################################################################################################
 # Please notice that this script has no download function
@@ -64,10 +63,8 @@ java17 = ""
 
 logging.info('Initializing ' + serverName)
 
-os.environ["JAVA_HOME"] = ""
-os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
-
 again = True
+
 ##################################################
 
 # Check version
@@ -79,28 +76,36 @@ elif version < 0 or version > 9:
     logging.error('Uncorrect Version Selected')
     again = False
 
-# Check java
+# Check java & others
 if again:
     logging.info('Checking Java Directory')
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
             logging.error('No Java 8 Directory Found')
+        else:
+            os.environ["JAVA_HOME"] = java8
+            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
             logging.error('No Java 17 Directory Found')
-    if version in [2,5,8]:
+        else:
+            os.environ["JAVA_HOME"] = java17
+            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
+    if version in [2,5,8]: # version 2,5,8
         logging.info('Checking Forge Version')
         if forgeVersion == "":
             again = False
             logging.error('No Forge Version Found')
-    if version in [3,6,9]:
+    if version in [3,6,9]: # version 3,6,9
         logging.info('Checking PaperMC Version')
         if paperVersion == "":
             again = False
             logging.error('No PaperMC Version Found')
 
+if not again:
+    pause = input("Click enter to continue")
 
 while again: # Server Loop
     again = False
@@ -113,11 +118,8 @@ while again: # Server Loop
     # Ask for run again
     again = True
     answer = input("Start again?(Y/N): ")
-    for i in range(15):
-        time.sleep(1)
-        if answer.lower() == "n" or answer.lower() == "no":
-            again = False
-            break
+    if answer.lower() == "n" or answer.lower() == "no":
+        again = False
     if again:
         logging.info('Restarting Server')
 

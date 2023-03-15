@@ -3,7 +3,6 @@
 # 無需編輯
 import subprocess
 import os
-import time
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
@@ -11,7 +10,7 @@ version = 0
 #################################################################################################
 # Minecraft伺服器啟動器(Python) 0.1
 # 這是由Python編寫的腳本
-# 這個腳本帶有自動重啟伺服器功能，伺服器崩潰或停止時會在15秒後自動重啟
+# 這個腳本帶有自動重啟伺服器功能，伺服器崩潰或停止時會在15秒後自動重啟(未完成)
 # 如要關閉伺服器，請先在伺服器中使用/stop停止伺服器，然後在詢問是否重啟時輸入"N"
 #################################################################################################
 # 請注意此腳本沒有下載功能
@@ -64,12 +63,9 @@ java17 = ""
 
 logging.info('正在初始化' + serverName)
 
-os.environ["JAVA_HOME"] = ""
-os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
-
 again = True
-##################################################
 
+##################################################
 
 # Check version
 logging.info('檢查啟動器版本')
@@ -80,17 +76,23 @@ elif version < 0 or version > 9:
     logging.error('錯誤啟動器版本')
     again = False
 
-# Check java
+# Check java & other
 if again:
     logging.info('檢查Java路徑')
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
             logging.error('沒有Java 8路徑')
+        else:
+            os.environ["JAVA_HOME"] = java8
+            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
             logging.error('沒有Java 17路徑')
+        else:
+            os.environ["JAVA_HOME"] = java17
+            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
     if version in [2,5,8]:
         logging.info('檢查Forge版本')
         if forgeVersion == "":
@@ -102,6 +104,8 @@ if again:
             again = False
             logging.error('沒有設定PaperMC版本')
 
+if not again:
+    pause = input("Enter以繼續")
 
 while again: # Server Loop
     again = False
@@ -114,11 +118,8 @@ while again: # Server Loop
     # Ask for run again
     again = True
     answer = input("是否再次啟動伺服器？(Y/N)：")
-    for i in range(15):
-        time.sleep(1)
-        if answer.lower() == "n" or answer.lower() == "no":
-            again = False
-            break
+    if answer.lower() == "n" or answer.lower() == "no":
+        again = False
     if again:
         logging.info('即將重新啟動伺服器')
 
