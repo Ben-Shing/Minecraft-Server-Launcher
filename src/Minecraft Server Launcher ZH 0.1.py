@@ -7,10 +7,13 @@ import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
 version = 0
+defaultRam = ["512M","1G"]
+#################################################################################################
+
 #################################################################################################
 # Minecraft伺服器啟動器(Python) 0.1
 # 這是由Python編寫的腳本
-# 這個腳本帶有自動重啟伺服器功能，伺服器崩潰或停止時會在15秒後自動重啟(未完成)
+# 這個腳本帶有自動重啟伺服器功能，伺服器崩潰或停止時會在15秒後自動重啟
 # 如要關閉伺服器，請先在伺服器中使用/stop停止伺服器，然後在詢問是否重啟時輸入"N"
 #################################################################################################
 # 請注意此腳本沒有下載功能
@@ -61,6 +64,22 @@ java17 = ""
 
 ##################################################
 
+# Functions
+def cmd_choice(timeout=15, default='Y'):
+    process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    choice = output.strip().decode('utf-8')
+    if choice == 'P':
+        pause()
+        return 'N'
+    else:
+        return choice
+
+def pause():
+    input("按回車鍵繼續...")
+
+##################################################
+
 logging.info('正在初始化' + serverName)
 
 again = True
@@ -104,21 +123,41 @@ if again:
             again = False
             logging.error('沒有設定PaperMC版本')
 
+# Check ram setting
+if minRam == "":
+    logging.info('Missing minRam value, setting minRam to ' + defaultRam[0])
+    minRam = defaultRam[0]
+if maxRam == "":
+    logging.info('Missing MaxRam Value, setting maxRam to ' + defaultRam[1])
+    maxRam = defaultRam[1]
+
+# Pause before exit
 if not again:
-    pause = input("Enter以繼續")
+    pause()
 
 while again: # Server Loop
     again = False
     
     # Start Server
     logging.info('正在啟動伺服器')
-    subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    if version in [1,4,7]: # version 1,4,7
+        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    elif version in [2,5,8]: # version 2,5,8
+        if forgeVersion.split("-")[0] in ["1.7","1.8","1.9","1.10","1.11","1.12","1.13","1.14","1.15","1.16"]:
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "forge-" + forgeVersion + ".jar", "--bonusChest"])
+        else:
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt", "--bonusChest"])
+    elif version in [3,6,9]:
+        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + paperVersion + ".jar"])
+    else:
+        logging.error('版本錯誤，你有可能遇到Bug')
     # Server Stopped
     logging.info('伺服器已停止')
     # Ask for run again
     again = True
-    answer = input("是否再次啟動伺服器？(Y/N)：")
-    if answer.lower() == "n" or answer.lower() == "no":
+    logging.info("Start again?(Y/N): ")
+    answer = cmd_choice()
+    if answer == 'N':
         again = False
     if again:
         logging.info('即將重新啟動伺服器')

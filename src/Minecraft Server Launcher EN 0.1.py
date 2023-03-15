@@ -7,10 +7,13 @@ import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
 version = 0
+defaultRam = ["512M","1G"]
+#################################################################################################
+
 #################################################################################################
 # Minecraft Server Launcher(Python) 0.1
 # This is a Python script
-# The script will automatically restart the server when server stoped (Currently not done)
+# The script will automatically restart the server when server stoped
 # To shutdown the server, use /stop in the server and type "N" when asking "Start again? (Y/N)"N"
 #################################################################################################
 # Please notice that this script has no download function
@@ -61,6 +64,22 @@ java17 = ""
 
 ##################################################
 
+# Functions
+def cmd_choice(timeout=15, default='Y'):
+    process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    choice = output.strip().decode('utf-8')
+    if choice == 'P':
+        pause()
+        return 'N'
+    else:
+        return choice
+
+def pause():
+    input("Press Enter to continue...")
+
+##################################################
+
 logging.info('Initializing ' + serverName)
 
 again = True
@@ -104,21 +123,41 @@ if again:
             again = False
             logging.error('No PaperMC Version Found')
 
+# Check ram setting
+if minRam == "":
+    logging.info('Missing minRam value, setting minRam to ' + defaultRam[0])
+    minRam = defaultRam[0]
+if maxRam == "":
+    logging.info('Missing MaxRam Value, setting maxRam to ' + defaultRam[1])
+    maxRam = defaultRam[1]
+
+# Pause before exit
 if not again:
-    pause = input("Click enter to continue")
+    pause()
 
 while again: # Server Loop
     again = False
     
     # Start Server
     logging.info('Starting Server')
-    subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    if version in [1,4,7]: # version 1,4,7
+        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
+    elif version in [2,5,8]: # version 2,5,8
+        if forgeVersion.split("-")[0] in ["1.7","1.8","1.9","1.10","1.11","1.12","1.13","1.14","1.15","1.16"]:
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "forge-" + forgeVersion + ".jar", "--bonusChest"])
+        else:
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt", "--bonusChest"])
+    elif version in [3,6,9]:
+        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + paperVersion + ".jar"])
+    else:
+        logging.error('Version Error, this should be a bug')
     # Server Stopped
     logging.info('Server Stopped')
     # Ask for run again
     again = True
-    answer = input("Start again?(Y/N): ")
-    if answer.lower() == "n" or answer.lower() == "no":
+    logging.info("Start again?(Y/N): ")
+    answer = cmd_choice()
+    if answer == 'N':
         again = False
     if again:
         logging.info('Restarting Server')
