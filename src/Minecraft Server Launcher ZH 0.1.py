@@ -72,35 +72,35 @@ again = True
 
 
 # Check version
-logging.info('Checking Launcher Version')
+logging.info('檢查啟動器版本')
 if version == 0:
-    logging.error('No Server Version Selected')
+    logging.error('沒有選擇啟動器版本')
     again = False
 elif version < 0 or version > 9: 
-    logging.error('Uncorrect Version Selected')
+    logging.error('錯誤啟動器版本')
     again = False
 
 # Check java
 if again:
-    logging.info('Checking Java Directory')
+    logging.info('檢查Java路徑')
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
-            logging.error('No Java Directory Found')
+            logging.error('沒有Java 8路徑')
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
-            logging.error('No Java Directory Found')
+            logging.error('沒有Java 17路徑')
     if version in [2,5,8]:
-        logging.info('Checking Forge Version')
+        logging.info('檢查Forge版本')
         if forgeVersion == "":
             again = False
-            logging.error('No Forge Version Found')
+            logging.error('沒有設定Forge版本')
     if version in [3,6,9]:
-        logging.info('Checking Paper Version')
+        logging.info('檢查PaperMC版本')
         if paperVersion == "":
             again = False
-            logging.error('No Paper Version Found')
+            logging.error('沒有設定PaperMC版本')
 
 
 while again: # Server Loop
