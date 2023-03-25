@@ -11,7 +11,7 @@ defaultRam = ["512M","1G"]
 #################################################################################################
 
 #################################################################################################
-# Minecraft Server Launcher(Python) 0.1
+# Minecraft Server Launcher(Python) 1.0
 # This is a Python script
 # The script will automatically restart the server when server stoped
 # To shutdown the server, use /stop in the server and type "N" when asking "Start again? (Y/N)"N"
@@ -24,7 +24,7 @@ defaultRam = ["512M","1G"]
 
 ##################################################
 # Server Name(Optional)
-serverName = "Minecraft Server Launcher(Python) 0.1"
+serverName = "Minecraft Server Launcher(Python) 1.0"
 ##################################################
 # Uncomment the version you needed
 #version = 1 #--> Minecraft 1.12-1.16

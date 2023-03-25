@@ -1,6 +1,6 @@
 @echo off
 REM===================================
-::Minecraft Server Launcher 3.1
+::Minecraft Server Launcher 4.0
 ::This is a script that start a minecraft server
 ::The script will automatically restart the server when server stoped
 ::To shutdown the server, use /stop in the server and type "N" when asking "Start again? (Y/N)"
@@ -10,7 +10,7 @@ REM===================================
 ::This script is created by BenShing
 REM===================================
 ::Server name here(Optional)
-set server_name=
+set server_name=Minecraft Server Launcher 4.0
 REM===================================
 ::version=1 --> Minecraft 1.12-1.16
 ::version=2 --> Minecraft 1.12-1.16 (Forge)
@@ -46,14 +46,14 @@ REM===================================
 
 ::<!>The code below will run the server, nothing need to be edited after this line<!>
 
-title Minecraft Server Launcher 3.1
+title Minecraft Server Launcher 4.0
 set input=
 set pathBackup=%path%
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set ESC=%%b
 
 :restart
-title Minecraft Server %server_name%
+title %server_name%
 echo ^<System^> %ESC%[32mPreparing Minecraft Server......%ESC%[0m
 if "%version%"=="1" goto version1
 if "%version%"=="2" goto version2
