@@ -6,6 +6,7 @@ import os
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
+launcherVersion = "v0.0.1-alpha"
 version = 0
 defaultRam = ["512M","1G"]
 #################################################################################################
@@ -24,7 +25,7 @@ defaultRam = ["512M","1G"]
 
 ##################################################
 # 伺服器名稱(選填)
-serverName = "Minecraft伺服器啟動器(Python) 1.0"
+serverName = "Minecraft伺服器啟動器(Python) " + launcherVersion
 ##################################################
 # 根據情況選擇版本，取消註解即可
 #version=1 #--> Minecraft 1.12-1.16

@@ -6,6 +6,7 @@ import os
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
+launcherVersion = "v0.0.1-alpha"
 version = 0
 defaultRam = ["512M","1G"]
 #################################################################################################
@@ -24,7 +25,7 @@ defaultRam = ["512M","1G"]
 
 ##################################################
 # Server Name(Optional)
-serverName = "Minecraft Server Launcher(Python) 1.0"
+serverName = "Minecraft Server Launcher(Python) " + launcherVersion
 ##################################################
 # Uncomment the version you needed
 #version = 1 #--> Minecraft 1.12-1.16
