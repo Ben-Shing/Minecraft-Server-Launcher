@@ -30,3 +30,10 @@ Welcome everyone to complete it or add more functions into the script.
 - [ ] Fabric
 - [ ] Spigot
 - [ ] And More...
+
+---
+
+### Planning Features
+- Server files downloading function
+- Auto locate Java path
+- Extra functions using server rcon
