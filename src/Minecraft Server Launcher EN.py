@@ -60,7 +60,7 @@ java8 = ""
 java17 = ""
 ##################################################
 #
-#The code below will run the server, nothing need to be edited
+# The code below will run the server, nothing need to be edited
 #
 
 ##################################################
@@ -92,32 +92,36 @@ logging.info('Checking Launcher Version')
 if version == 0:
     logging.error('No Server Version Selected')
     again = False
-elif version < 0 or version > 9: 
+elif version < 0 or version > 9:
     logging.error('Uncorrect Version Selected')
     again = False
 
 # Check java & others
 if again:
     logging.info('Checking Java Directory')
+    java_path = None
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
             logging.error('No Java 8 Directory Found')
         else:
-            os.environ["JAVA_HOME"] = java8
-            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
+            java_path = java8
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
             logging.error('No Java 17 Directory Found')
         else:
-            os.environ["JAVA_HOME"] = java17
-            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
+            java_path = java17
+    if java_path:
+        os.environ["JAVA_HOME"] = java_path
+        os.environ["Path"] = os.path.join(java_path, "\\bin")
+
     if version in [2,5,8]: # version 2,5,8
         logging.info('Checking Forge Version')
         if forgeVersion == "":
             again = False
             logging.error('No Forge Version Found')
+    
     if version in [3,6,9]: # version 3,6,9
         logging.info('Checking PaperMC Version')
         if paperVersion == "":
@@ -126,10 +130,10 @@ if again:
 
 # Check ram setting
 if minRam == "":
-    logging.info('Missing minRam value, setting minRam to ' + defaultRam[0])
+    logging.info('Missing minRam value, setting minRam to {}'.format(defaultRam[0]))
     minRam = defaultRam[0]
 if maxRam == "":
-    logging.info('Missing MaxRam Value, setting maxRam to ' + defaultRam[1])
+    logging.info('Missing maxRam value, setting maxRam to {}'.format(defaultRam[1]))
     maxRam = defaultRam[1]
 
 # Pause before exit
@@ -138,7 +142,7 @@ if not again:
 
 while again: # Server Loop
     again = False
-    
+
     # Start Server
     logging.info('Starting Server')
     if version in [1,4,7]: # version 1,4,7

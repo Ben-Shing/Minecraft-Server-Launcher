@@ -92,32 +92,36 @@ logging.info('檢查啟動器版本')
 if version == 0:
     logging.error('沒有選擇啟動器版本')
     again = False
-elif version < 0 or version > 9: 
+elif version < 0 or version > 9:
     logging.error('錯誤啟動器版本')
     again = False
 
 # Check java & other
 if again:
     logging.info('檢查Java路徑')
+    java_path = None
     if version in range(1,3,1): # version 1,2,3
         if java8 == "":
             again = False
             logging.error('沒有Java 8路徑')
         else:
-            os.environ["JAVA_HOME"] = java8
-            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
+            java_path = java8
     if version in range(4,6,1): # version 4,5,6
         if java17 == "":
             again = False
             logging.error('沒有Java 17路徑')
         else:
-            os.environ["JAVA_HOME"] = java17
-            os.environ["Path"] = os.environ["JAVA_HOME"] + "\\bin"
+            java_path = java17
+    if java_path:
+        os.environ["JAVA_HOME"] = java_path
+        os.environ["Path"] = os.path.join(java_path, "\\bin")
+    
     if version in [2,5,8]:
         logging.info('檢查Forge版本')
         if forgeVersion == "":
             again = False
             logging.error('沒有設定Forge版本')
+            
     if version in [3,6,9]:
         logging.info('檢查PaperMC版本')
         if paperVersion == "":
@@ -126,10 +130,10 @@ if again:
 
 # Check ram setting
 if minRam == "":
-    logging.info('缺少最少分配記憶體，設定成預設：' + defaultRam[0])
+    logging.info('缺少最少分配記憶體，設定成預設：{}'.format(defaultRam[0]))
     minRam = defaultRam[0]
 if maxRam == "":
-    logging.info('缺少最大分配記憶體，設定成預設：' + defaultRam[1])
+    logging.info('缺少最大分配記憶體，設定成預設：{}'.format(defaultRam[1]))
     maxRam = defaultRam[1]
 
 # Pause before exit
