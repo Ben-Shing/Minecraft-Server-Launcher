@@ -1,5 +1,5 @@
 @echo off
-set launcherVersion=v0.0.1-alpha
+set launcherVersion=v0.0.1-alpha.1
 REM===================================
 ::Minecraft Server Launcher
 ::This is a script that start a minecraft server
@@ -37,7 +37,7 @@ set max_ram=
 ::Example : 512M / 8G
 ::<!> M=Megabyte ; G=Gigabyte<!>
 REM===================================
-::Set Java Directory Here (Use a full directory like this: "C:\Program Files\Java\jre1.8.0_291")
+::Set Java Directory Here (Use a directory like this: "C:\Program Files\Java\jdk-17")
 ::Java usually inside "C:\Program Files\Java\..."
 ::Java 8 Directory (For Minecraft 1.12-1.16)
 set java8=
