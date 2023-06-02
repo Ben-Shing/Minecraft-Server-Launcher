@@ -20,7 +20,7 @@ import datetime
 now = datetime.datetime.now()
 date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
 
-propertiesFile = 'MinecraftServerLauncher.properties'
+propertiesFile = os.path.join("MinecraftServerLauncher", 'MinecraftServerLauncher.properties')
 properties = {
     "server-name": "",
     "launcher-version": "",
@@ -32,17 +32,21 @@ properties = {
     "java8": "",
     "java17": ""
     }
-properties["launcher-version"] = "v0.0.2-alpha"
+properties["launcher-version"] = "v0.0.2-alpha.1"
 properties["runtime-version"] = 0
 defaultRam = ["512M","1G"]
-properties["server-name"] = "Minecraft Server Launcher(Python) " + properties["launcher-version"]
+properties["server-name"] = "Minecraft Server Launcher EN(Python) " + properties["launcher-version"]
+environBackup = os.environ["Path"]
 
 ##################################################
 
 # Functions
 def cmd_choice(timeout=15, default='Y'):
+    temp = os.environ["Path"]
+    os.environ["Path"] = environBackup
     process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
     output, error = process.communicate()
+    os.environ["Path"] = temp
     choice = output.strip().decode('utf-8')
     if choice == 'P':
         pause()
@@ -56,8 +60,8 @@ def pause():
 ##################################################
 
 #logging setup
-if not os.path.exists("log"):
-    os.mkdir("log")
+if not os.path.exists(os.path.join("MinecraftServerLauncher", "logs")):
+    os.mkdir(os.path.join("MinecraftServerLauncher", "logs"))
 
 logger = logging.getLogger('main')
 logger.setLevel(logging.INFO)
@@ -66,13 +70,18 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 
 filename = f"{date_time}.log"
-filenameWithDir = os.path.join("log", filename)
+filenameWithDir = os.path.join("MinecraftServerLauncher", "logs", filename)
 file_handler = logging.FileHandler(filenameWithDir)
 file_handler.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+formatterText = "%(asctime)s %(levelname)s: %(message)s"
 
-console_handler.setFormatter(formatter)
+try:
+    from MinecraftServerLauncher import ColorLog
+    console_handler.setFormatter(ColorLog.ColorFormatter(formatterText))
+except ImportError:
+    console_handler.setFormatter(formatterText)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
@@ -99,7 +108,7 @@ if os.path.isfile(propertiesFile):
         properties["runtime-version"] = -1
 else:
     logger.critical('Could not find properties file')
-    logger.critical('Exiting...')
+    logger.critical('Stopping...')
     pause()
     exit()
 
@@ -138,7 +147,7 @@ if again:
             java_path = properties["java17"]
     if java_path:
         os.environ["JAVA_HOME"] = java_path
-        os.environ["Path"] = os.path.join(java_path, "\\bin")
+        os.environ["Path"] = os.path.join(java_path, "bin")
 
     if properties["runtime-version"] in [2,5,8]: # version 2,5,8
         logger.info('Checking Forge Version')
@@ -175,7 +184,7 @@ while again: # Server Loop
             subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
         else:
             logger.critical('Could not find server file: ' + serverfile)
-            logger.critical('Exiting...')
+            logger.critical('Stopping...')
             pause()
             exit()
     elif properties["runtime-version"] in [2,5,8]: # version 2,5,8
@@ -185,7 +194,7 @@ while again: # Server Loop
                 subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "forge-" + properties["forge-version"] + ".jar", "--bonusChest"])
             else:
                 logger.critical('Could not find server file: ' + serverfile)
-                logger.critical('Exiting...')
+                logger.critical('Stopping...')
                 pause()
                 exit()
         else:
@@ -194,7 +203,7 @@ while again: # Server Loop
                 subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "@libraries/net/minecraftforge/forge/" + properties["forge-version"] + "/win_args.txt", "--bonusChest"])
             else:
                 logger.critical('Could not find server file: ' + serverfile)
-                logger.critical('Exiting...')
+                logger.critical('Stopping...')
                 pause()
                 exit()
     elif properties["runtime-version"] in [3,6,9]: # version 3,6,9
@@ -203,7 +212,7 @@ while again: # Server Loop
             subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + properties["paper-version"] + ".jar"])
         else:
             logger.critical('Could not find server file: ' + serverfile)
-            logger.critical('Exiting...')
+            logger.critical('Stopping...')
             pause()
             exit()
     else:
