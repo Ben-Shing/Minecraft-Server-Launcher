@@ -1,17 +1,4 @@
 #################################################################################################
-# Importing dependents
-# No need to edit
-import subprocess
-import os
-import logging
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.ERROR)
-launcherVersion = "v0.0.1-alpha"
-version = 0
-defaultRam = ["512M","1G"]
-#################################################################################################
-
-#################################################################################################
 # Minecraft Server Launcher(Python)
 # This is a Python script
 # The script will automatically restart the server when server stoped
@@ -23,52 +10,43 @@ defaultRam = ["512M","1G"]
 # This script is created by BenShing
 #################################################################################################
 
+import subprocess
+import os
+import logging
+import datetime
+
 ##################################################
-# Server Name(Optional)
-serverName = "Minecraft Server Launcher(Python) " + launcherVersion
-##################################################
-# Uncomment the version you needed
-#version = 1 #--> Minecraft 1.12-1.16
-#version = 2 #--> Minecraft 1.12-1.16 (Forge)
-#version = 3 #--> Minecraft 1.12-1.16 (PaperMC)
-#version = 4 #--> Minecraft 1.18+
-#version = 5 #--> Minecraft 1.18+ (Forge)
-#version = 6 #--> Minecraft 1.18+ (PaperMC)
-#version = 7 #--> Using Default Java
-#version = 8 #--> Using Default Java (Forge)
-#version = 9 #--> Using Default Java (PaperMC)
-##################################################
-# Forge Server Only (MinecraftVersion-ForgeVersion)
-forgeVersion = ""
-##################################################
-# PaperMC Server Only (MinecraftVersion-PaperMCVersion)
-paperVersion = ""
-##################################################
-# Minimum Ram
-minRam = ""
-# Maximum Ram
-maxRam = ""
-# Example: 512M / 8G
-# M=Megabyte
-# G=Gigabyte
-##################################################
-# Specify Java Directory (No need to specify if you want to use the default Java)
-# 1.16 or below -> Java 8 | 1.18 or above -> Java 17
-# Java 8 Directory
-java8 = ""
-# Java 17 Directory
-java17 = ""
-##################################################
-#
-# The code below will run the server, nothing need to be edited
-#
+
+now = datetime.datetime.now()
+date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
+
+propertiesFile = os.path.join("MinecraftServerLauncher", 'MinecraftServerLauncher.properties')
+properties = {
+    "server-name": "",
+    "launcher-version": "",
+    "runtime-version": "",
+    "forge-version": "",
+    "paper-version": "",
+    "min-ram": "",
+    "max-ram": "",
+    "java8": "",
+    "java17": ""
+    }
+properties["launcher-version"] = "v0.0.2-alpha.1"
+properties["runtime-version"] = 0
+defaultRam = ["512M","1G"]
+properties["server-name"] = "Minecraft Server Launcher EN(Python) " + properties["launcher-version"]
+environBackup = os.environ["Path"]
 
 ##################################################
 
 # Functions
 def cmd_choice(timeout=15, default='Y'):
+    temp = os.environ["Path"]
+    os.environ["Path"] = environBackup
     process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
     output, error = process.communicate()
+    os.environ["Path"] = temp
     choice = output.strip().decode('utf-8')
     if choice == 'P':
         pause()
@@ -81,59 +59,114 @@ def pause():
 
 ##################################################
 
-logging.info('Initializing ' + serverName)
+#logging setup
+if not os.path.exists(os.path.join("MinecraftServerLauncher", "logs")):
+    os.mkdir(os.path.join("MinecraftServerLauncher", "logs"))
+
+logger = logging.getLogger('main')
+logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+filename = f"{date_time}.log"
+filenameWithDir = os.path.join("MinecraftServerLauncher", "logs", filename)
+file_handler = logging.FileHandler(filenameWithDir)
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+formatterText = "%(asctime)s %(levelname)s: %(message)s"
+
+try:
+    from MinecraftServerLauncher import ColorLog
+    console_handler.setFormatter(ColorLog.ColorFormatter(formatterText))
+except ImportError:
+    console_handler.setFormatter(formatterText)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+##################################################
+
+if os.path.isfile(propertiesFile):
+    with open(propertiesFile, 'r') as propertiesFile:
+        for line in propertiesFile:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip()
+            if not value:
+                continue
+            else:
+                properties[key] = value
+    try:
+        properties["runtime-version"] = int(properties["runtime-version"])
+    except:
+        properties["runtime-version"] = -1
+else:
+    logger.critical('Could not find properties file')
+    logger.critical('Stopping...')
+    pause()
+    exit()
+
+##################################################
+
+logger.info('Initializing ' + properties["server-name"])
 
 again = True
 
 ##################################################
 
 # Check version
-logging.info('Checking Launcher Version')
-if version == 0:
-    logging.error('No Server Version Selected')
+logger.info('Checking Launcher Version')
+if properties["runtime-version"] == 0:
+    logger.error('No Runtime Version Selected')
     again = False
-elif version < 0 or version > 9:
-    logging.error('Uncorrect Version Selected')
+elif properties["runtime-version"] < 0 or properties["runtime-version"] > 9:
+    logger.error('Uncorrect Runtime Version Selected')
     again = False
 
 # Check java & others
 if again:
-    logging.info('Checking Java Directory')
+    logger.info('Checking Java Directory')
     java_path = None
-    if version in range(1,3,1): # version 1,2,3
-        if java8 == "":
+    if properties["runtime-version"] in range(1,3,1): # version 1,2,3
+        if properties["java8"] == "":
             again = False
-            logging.error('No Java 8 Directory Found')
+            logger.error('No Java 8 Directory Found')
         else:
-            java_path = java8
-    if version in range(4,6,1): # version 4,5,6
-        if java17 == "":
+            java_path = properties["java8"]
+    if properties["runtime-version"] in range(4,6,1): # version 4,5,6
+        if properties["java17"] == "":
             again = False
-            logging.error('No Java 17 Directory Found')
+            logger.error('No Java 17 Directory Found')
         else:
-            java_path = java17
+            java_path = properties["java17"]
     if java_path:
         os.environ["JAVA_HOME"] = java_path
-        os.environ["Path"] = os.path.join(java_path, "\\bin")
+        os.environ["Path"] = os.path.join(java_path, "bin")
 
-    if version in [2,5,8]: # version 2,5,8
-        logging.info('Checking Forge Version')
-        if forgeVersion == "":
+    if properties["runtime-version"] in [2,5,8]: # version 2,5,8
+        logger.info('Checking Forge Version')
+        if properties["forge-version"] == "":
             again = False
-            logging.error('No Forge Version Found')
+            logger.error('No Forge Version Found')
     
-    if version in [3,6,9]: # version 3,6,9
-        logging.info('Checking PaperMC Version')
-        if paperVersion == "":
+    if properties["runtime-version"] in [3,6,9]: # version 3,6,9
+        logger.info('Checking PaperMC Version')
+        if properties["paper-version"] == "":
             again = False
-            logging.error('No PaperMC Version Found')
+            logger.error('No PaperMC Version Found')
 
 # Check ram setting
-if minRam == "":
-    logging.info('Missing minRam value, setting minRam to {}'.format(defaultRam[0]))
+if properties["min-ram"] == "":
+    logger.info('Missing minRam value, setting minRam to {}'.format(defaultRam[0]))
     minRam = defaultRam[0]
-if maxRam == "":
-    logging.info('Missing maxRam value, setting maxRam to {}'.format(defaultRam[1]))
+if properties["max-ram"] == "":
+    logger.info('Missing maxRam value, setting maxRam to {}'.format(defaultRam[1]))
     maxRam = defaultRam[1]
 
 # Pause before exit
@@ -144,29 +177,57 @@ while again: # Server Loop
     again = False
 
     # Start Server
-    logging.info('Starting Server')
-    if version in [1,4,7]: # version 1,4,7
-        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
-    elif version in [2,5,8]: # version 2,5,8
-        if forgeVersion.split("-")[0] in ["1.7","1.8","1.9","1.10","1.11","1.12","1.13","1.14","1.15","1.16"]:
-            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "forge-" + forgeVersion + ".jar", "--bonusChest"])
+    logger.info('Starting Server')
+    if properties["runtime-version"] in [1,4,7]: # version 1,4,7
+        serverfile = "server.jar"
+        if os.path.isfile(serverfile):
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
         else:
-            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "@libraries/net/minecraftforge/forge/" + forgeVersion + "/win_args.txt", "--bonusChest"])
-    elif version in [3,6,9]:
-        subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + paperVersion + ".jar"])
+            logger.critical('Could not find server file: ' + serverfile)
+            logger.critical('Stopping...')
+            pause()
+            exit()
+    elif properties["runtime-version"] in [2,5,8]: # version 2,5,8
+        if properties["forge-version"].split("-")[0] in ["1.7","1.8","1.9","1.10","1.11","1.12","1.13","1.14","1.15","1.16"]:
+            serverfile = "forge-" + properties["forge-version"] + ".jar"
+            if os.path.isfile(serverfile):
+                subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "forge-" + properties["forge-version"] + ".jar", "--bonusChest"])
+            else:
+                logger.critical('Could not find server file: ' + serverfile)
+                logger.critical('Stopping...')
+                pause()
+                exit()
+        else:
+            serverfile = os.path.join("libraries", "net", "minecraftforge", "forge", properties["forge-version"], properties["forge-version"] + "-server.jar")
+            if os.path.isfile(serverfile):
+                subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "@libraries/net/minecraftforge/forge/" + properties["forge-version"] + "/win_args.txt", "--bonusChest"])
+            else:
+                logger.critical('Could not find server file: ' + serverfile)
+                logger.critical('Stopping...')
+                pause()
+                exit()
+    elif properties["runtime-version"] in [3,6,9]: # version 3,6,9
+        serverfile = "paper-" + properties["paper-version"] + ".jar"
+        if os.path.isfile(serverfile):
+            subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + properties["paper-version"] + ".jar"])
+        else:
+            logger.critical('Could not find server file: ' + serverfile)
+            logger.critical('Stopping...')
+            pause()
+            exit()
     else:
-        logging.error('Version Error, this should be a bug')
+        logger.error('Version Error, this should be a bug')
     # Server Stopped
-    logging.info('Server Stopped')
+    logger.info('Server Stopped')
     # Ask for run again
     again = True
-    logging.info("Start again?(Y/N): ")
+    logger.info("Start again?(Y/N): ")
     answer = cmd_choice()
     if answer == 'N':
         again = False
     if again:
-        logging.info('Restarting Server')
+        logger.info('Restarting Server')
 
 # Stopping Script
-logging.info('Stopping ' + serverName)
+logger.info('Stopping ' + properties["server-name"])
 exit()
