@@ -33,6 +33,12 @@ Welcome everyone to complete it or add more functions into the script.
 
 ---
 
+### Done Features
+- Launcher Logging (With Color)
+- Properties File
+
+---
+
 ### Planning Features
 - Server files downloading function
 - Auto locate Java path
