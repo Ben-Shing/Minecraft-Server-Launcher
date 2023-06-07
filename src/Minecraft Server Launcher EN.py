@@ -6,7 +6,6 @@
 #################################################################################################
 # Please notice that this script has no download function
 # You should download and install the server on your own
-# You should also complete the variable below before running this script
 # This script is created by BenShing
 #################################################################################################
 
