@@ -59,8 +59,6 @@ def pause():
 ##################################################
 
 #logging setup
-from MinecraftServerLauncher import ColorLog
-
 if not os.path.exists(os.path.join("MinecraftServerLauncher", "logs")):
     os.mkdir(os.path.join("MinecraftServerLauncher", "logs"))
 
