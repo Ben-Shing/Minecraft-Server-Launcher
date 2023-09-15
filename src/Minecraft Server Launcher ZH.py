@@ -124,7 +124,7 @@ logger.info('檢查啟動器版本')
 if properties["runtime-version"] == 0:
     logger.error('沒有選擇啟動器版本')
     again = False
-elif properties["runtime-version"] < 0 or properties["runtime-version"] > 9:
+elif properties["runtime-version"] < 0 or properties["runtime-version"] > 12:
     logger.error('錯誤啟動器版本')
     again = False
 
@@ -139,6 +139,12 @@ if again:
         else:
             java_path = properties["java8"]
     if properties["runtime-version"] in range(4,6,1): # version 4,5,6
+        if properties["java16"] == "":
+            again = False
+            logger.error('沒有Java 16路徑')
+        else:
+            java_path = properties["java16"]
+    if properties["runtime-version"] in range(7,9,1): # version 7,8,9
         if properties["java17"] == "":
             again = False
             logger.error('沒有Java 17路徑')
@@ -148,13 +154,13 @@ if again:
         os.environ["JAVA_HOME"] = java_path
         os.environ["Path"] = os.path.join(java_path, "bin")
     
-    if properties["runtime-version"] in [2,5,8]:
+    if properties["runtime-version"] in [2,5,8,11]: # version 2,5,8,11
         logger.info('檢查Forge版本')
         if properties["forge-version"] == "":
             again = False
             logger.error('沒有設定Forge版本')
             
-    if properties["runtime-version"] in [3,6,9]:
+    if properties["runtime-version"] in [3,6,9,12]: # version 3,6,9,12
         logger.info('檢查PaperMC版本')
         if properties["paper-version"] == "":
             again = False
@@ -177,7 +183,7 @@ while again: # Server Loop
     
     # Start Server
     logger.info('正在啟動伺服器')
-    if properties["runtime-version"] in [1,4,7]: # version 1,4,7
+    if properties["runtime-version"] in [1,4,7,10]: # version 1,4,7,10
         serverfile = "server.jar"
         if os.path.isfile(serverfile):
             subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "server.jar", "--bonusChest"])
@@ -186,7 +192,7 @@ while again: # Server Loop
             logger.critical('正在停止...')
             pause()
             exit()
-    elif properties["runtime-version"] in [2,5,8]: # version 2,5,8
+    elif properties["runtime-version"] in [2,5,8,11]: # version 2,5,8,11
         if properties["forge-version"].split("-")[0] in ["1.7","1.8","1.9","1.10","1.11","1.12","1.13","1.14","1.15","1.16"]:
             serverfile = "forge-" + properties["forge-version"] + ".jar"
             if os.path.isfile(serverfile):
@@ -205,7 +211,7 @@ while again: # Server Loop
                 logger.critical('正在停止...')
                 pause()
                 exit()
-    elif properties["runtime-version"] in [3,6,9]:
+    elif properties["runtime-version"] in [3,6,9,12]: # version 3,6,9,12
         serverfile = "paper-" + properties["paper-version"] + ".jar"
         if os.path.isfile(serverfile):
             subprocess.run(["java", "-Xms" + minRam, "-Xmx" + maxRam, "-jar", "paper-" + properties["paper-version"] + ".jar"])
