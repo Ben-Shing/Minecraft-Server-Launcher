@@ -10,22 +10,23 @@ class PropertiesHandler():
         }
 
     def propertiesPath(self):
-        current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         properties_file = os.path.join(current_dir, "MinecraftServerLauncher.properties")
         return properties_file
 
     def checkFileExist(self):
-        path = self.properties_path()
+        path = self.propertiesPath()
         return os.path.isfile(path)
     
     def createPropertiesFile(self):
-        path = self.properties_path()
+        path = self.propertiesPath()
         with open(path, 'w') as properties_file:
             for key, value in self.properties.items():
                 properties_file.write(f'{key}={value}\n')
         return path
         
-    def readPropertiesFile(self, path):
+    def readPropertiesFile(self):
+        path = self.propertiesPath()
         with open(path, 'r') as properties_file:
             for line in properties_file:
                 line = line.strip()
@@ -52,8 +53,8 @@ class PropertiesHandler():
 
 
     def test(self):
-        path = self.properties_path()
-        properties = self.read_properties_file(path)
+        path = self.propertiesPath()
+        properties = self.readPropertiesFile()
         print('Properties:')
         for key, value in properties.items():
             print(f'{key}={value}')

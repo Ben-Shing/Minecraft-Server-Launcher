@@ -8,8 +8,7 @@ class Log():
         console_handler.setLevel(level)
         console_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
         self.logger.addHandler(console_handler)
-        self.logger.info('Initializing ' + name + ' logger')
-        self.logger.info('Logging level: ' + logging.getLevelName(level))
+        self.logger.info(f'Initializing logger: {name}, logging level: {logging.getLevelName(level)}')
 
     def debug(self, message):
         self.logger.debug(message)

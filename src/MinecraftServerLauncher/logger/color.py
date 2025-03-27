@@ -1,7 +1,11 @@
 import logging
 import rich.logging as rlogging
 
-import log
+if __name__ == '__main__':
+    import log
+elif __name__ == 'logger.color':
+    from logger import log
+
 
 
 class ColorLog(log.Log):
@@ -12,8 +16,7 @@ class ColorLog(log.Log):
         console_handler.setLevel(level)
         self.logger.addHandler(console_handler)
         self.logger.setLevel(level)
-        self.logger.info('Initializing ' + name + ' logger')
-        self.logger.info('Logging level: ' + logging.getLevelName(level))
+        self.logger.info(f'Initializing logger: {name}, logging level: {logging.getLevelName(level)}')
 
 
 def testMode():
