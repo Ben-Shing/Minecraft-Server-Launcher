@@ -34,9 +34,7 @@ def pause():
     input("Press Enter to continue...")
 
 
-##################################################
-
-if __name__ == "__main__":
+def old_code():
     now = datetime.datetime.now()
     date_time = now.strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -238,3 +236,12 @@ if __name__ == "__main__":
     # Stopping Script
     logger.info('Stopping ' + properties["server-name"])
     exit()
+
+
+##################################################
+
+if __name__ == "__main__":
+    from modules.files import properties
+    properties.test_mode()
+    
+    
