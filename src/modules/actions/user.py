@@ -6,7 +6,7 @@ class ActionHandler():
     def __init__(self):
         pass
 
-    def cmd_choice(self, timeout=15, default='Y'):
+    def cmdChoice(self, timeout=15, default='Y'):
         if os.environ["Path"].find("C:\\Windows\\System32") == -1:
             os.environ["Path"] = os.environ["Path"] + ";C:\\Windows\\System32"
         process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
@@ -24,15 +24,15 @@ class ActionHandler():
     def test(self):
         print('Testing action handler:')
         print('cmd_choice:')
-        self.cmd_choice()
+        self.cmdChoice()
         print('Pause:')
         self.pause()
         print('Test complete.')
 
 
-def test_mode():
+def testMode():
     print('Entering test mode...')
     ActionHandler().test()
 
 if __name__ == '__main__':
-    test_mode()
+    testMode()

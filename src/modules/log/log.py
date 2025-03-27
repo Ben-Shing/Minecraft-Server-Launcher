@@ -35,10 +35,10 @@ class Log():
         self.critical('This is a critical message')
         print('Test complete.')
 
-def test_mode():
+def testMode():
     print('Entering test mode...')
     logger = Log('test', level = logging.DEBUG)
     logger.test()
 
 if __name__ == '__main__':
-    test_mode()
+    testMode()

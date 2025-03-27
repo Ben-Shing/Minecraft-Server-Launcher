@@ -16,10 +16,10 @@ class ColorLog(log.Log):
         self.logger.info('Logging level: ' + logging.getLevelName(level))
 
 
-def test_mode():
+def testMode():
     print('Entering test mode...')
     logger = ColorLog('test', level = logging.DEBUG)
     logger.test()   
 
 if __name__ == '__main__':
-    test_mode()
+    testMode()

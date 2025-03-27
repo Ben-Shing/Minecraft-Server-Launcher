@@ -9,23 +9,23 @@ class PropertiesHandler():
             "max-ram": "",
         }
 
-    def properties_path(self):
+    def propertiesPath(self):
         current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         properties_file = os.path.join(current_dir, "MinecraftServerLauncher.properties")
         return properties_file
 
-    def check_file_exist(self):
+    def checkFileExist(self):
         path = self.properties_path()
         return os.path.isfile(path)
     
-    def create_properties_file(self):
+    def createPropertiesFile(self):
         path = self.properties_path()
         with open(path, 'w') as properties_file:
             for key, value in self.properties.items():
                 properties_file.write(f'{key}={value}\n')
         return path
         
-    def read_properties_file(self, path):
+    def readPropertiesFile(self, path):
         with open(path, 'r') as properties_file:
             for line in properties_file:
                 line = line.strip()
@@ -40,12 +40,12 @@ class PropertiesHandler():
                     self.properties[key] = value
         return self.properties
     
-    def get_properties_value(self, key):
+    def getPropertiesValue(self, key):
         if key not in self.properties:
             raise KeyError(f'Key {key} not found in properties.')
         return self.properties[key]
         
-    def set_properties_value(self, key, value):
+    def setPropertiesValue(self, key, value):
         if key not in self.properties:
             raise KeyError(f'Key {key} not found in properties.')
         self.properties[key] = value
@@ -58,9 +58,9 @@ class PropertiesHandler():
         for key, value in properties.items():
             print(f'{key}={value}')
 
-def test_mode():
+def testMode():
     print('Entering test mode...')
     PropertiesHandler().test()
 
 if __name__ == '__main__':
-    test_mode()
+    testMode()
