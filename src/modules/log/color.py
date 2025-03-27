@@ -1,16 +1,14 @@
 import logging
-import rich.logging
+import rich.logging as rlogging
 
 import log
 
 
-
 class ColorLog(log.Log):
 
-    
     def __init__(self, name, level = logging.INFO):
         self.logger = logging.getLogger(name)
-        console_handler = rich.logging.RichHandler()
+        console_handler = rlogging.RichHandler()
         console_handler.setLevel(level)
         self.logger.addHandler(console_handler)
         self.logger.setLevel(level)
@@ -18,14 +16,10 @@ class ColorLog(log.Log):
         self.logger.info('Logging level: ' + logging.getLevelName(level))
 
 
-if __name__ == '__main__':
+def test_mode():
     print('Entering test mode...')
     logger = ColorLog('test', level = logging.DEBUG)
-    print()
-    print('Testing logging...')
-    logger.debug('This is a debug message')
-    logger.info('This is an info message')
-    logger.warning('This is a warning message')
-    logger.error('This is an error message')
-    logger.critical('This is a critical message')
-    print('Exiting...')
+    logger.test()   
+
+if __name__ == '__main__':
+    test_mode()
