@@ -255,50 +255,116 @@ def main():
         from actions import user
     except ImportError:
         error_modules.append('actions.user')
+    try:
+        from actions import server
+    except ImportError:
+        error_modules.append('actions.server')
     
     if len(error_modules) > 0:
         print(f'Following modules are missing: {error_modules}')
         print(f'Please check your installation')
         print('Stopping...')
-        exit()
-    
-
-    # Logging setup
-    import logging
-    main_logger = clog.ColorLog('main', level = logging.DEBUG)
-
-    # Properties setup
-    main_logger.debug('Initializing Properties Handler...')
-    properties_handler = properties.PropertiesHandler()
-    main_logger.debug(f'Finding properties file in {properties_handler.propertiesPath()}')
-    if not properties_handler.checkFileExist():  # No properties file found, create new
-        main_logger.warning('Could not find properties file')
-        main_logger.info('Creating properties file...')
-        if properties_handler.createPropertiesFile():
-            main_logger.info('Properties file created, you should edit the file before running again')
-        else:
-            main_logger.critical('Could not create properties file')
-
-        main_logger.info('Stopping...')
         return
-     
-    main_logger.info('Found properties file, reading...')
-    properties_handler.readPropertiesFile()
 
-    #Todo Reading properties here
-    pass
-        
 
+    # logger.color setup
+    import logging
+    logger = clog.ColorLog('main', level = logging.DEBUG)
+
+
+    # actions.user setup
+    logger.debug('Initializing User Action Handler...')
+    user_handler = user.ActionHandler()
+    logger.info('User Action Handler initialized')
+
+
+    # file.properties setup
+    logger.debug('Initializing Properties Handler...')
+    properties_handler = properties.PropertiesHandler()
+    logger.debug(f'Finding properties file in {properties_handler.propertiesPath()}')
+    if not properties_handler.checkFileExist():  # No properties file found, create new
+        logger.warning('Could not find properties file')
+        logger.info('Creating properties file...')
+        if properties_handler.createPropertiesFile():
+            logger.info('Properties file created, you should edit the file before running again')
+        else:
+            logger.critical('Could not create properties file')
+
+        logger.info('Stopping...')
+        return
     
-        
+    logger.info('Found properties file, reading...')
+    server_properties = properties_handler.readPropertiesFile()
+
+
+    # Adding Fixed properties
+    server_properties["launcher-version"] = "v0.0.3-alpha"
+
+
+    # Check properties
+    stop = False
+    logger.debug('Checking properties...')
+    if server_properties['server-name'] == '':
+        logger.warning(f'Server name is not set, setting to default name: Minecraft Server Launcher - {server_properties["launcher-version"]}')
+        server_properties['server-name'] = f'Minecraft Server Launcher - {server_properties["launcher-version"]}'
+    if server_properties['min-ram'] == '':
+        logger.warning('Missing minRam value, setting minRam to 512M')
+        server_properties['min-ram'] = '512M'
+    if server_properties['max-ram'] == '':
+        logger.warning('Missing maxRam value, setting maxRam to 1G')
+        server_properties['max-ram'] = '1G'
+    if server_properties['custom-jdk'] == '':
+        logger.info('Custom JDK not set, using default JDK')
+    if server_properties['auto-restart'] == '':
+        logger.warning('Auto-restart not set, default to False (Server will not restart automatically)')
+        server_properties['auto-restart'] = 'False'
+    if server_properties['auto-restart'].lower() not in ['true', 'false']:
+        logger.error('Auto-restart value is not valid, Expected: True or False')
+        stop = True
     
-    main_logger.debug('Program ended')
-    main_logger.info('Stopping...')
+    if stop:
+        logger.critical('Got invalid properties, stopping...')
+        return
+    
+    logger.info('Properties checking complete')
+
+
+    # Server auto-restart initialization
+    if server_properties['auto-restart'].lower() == 'true':
+        logger.info('Initializing server auto-restart...')
+        auto_restart = True
+    else:
+        logger.debug('Skipping server auto-restart initialization')
+        auto_restart = False
+
+
+    # Start server
+    while True:
+        logger.info('Starting server...')
+
+        ###########################
+        # TODO: Start server Here #
+        ###########################
+
+        # Server Stopped
+        logger.info('Server Stopped')
+        if not auto_restart: # Auto-restart is disabled
+            break
+
+        # Ask for run again
+        logger.info('Auto-restart is enabled')
+        logger.info(f'Start again?\nY: Yes\nN: No\nP: Pause')
+        answer = user_handler.cmdChoice()
+        if answer == 'N':
+            break
+
+
+    # Endding
+    logger.debug('Program ended')
+    logger.info('Stopping...')
     return
 
 ##################################################
 
 if __name__ == "__main__":
     main()
-    
-    

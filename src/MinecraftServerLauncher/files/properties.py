@@ -7,6 +7,8 @@ class PropertiesHandler():
             "server-name": "",
             "min-ram": "",
             "max-ram": "",
+            "custom-jdk": "",
+            "auto-restart": ""
         }
 
     def propertiesPath(self):
@@ -59,16 +61,27 @@ class PropertiesHandler():
                     self.properties[key] = value
         return self.properties
     
-    def getPropertiesValue(self, key):
+    def getPropertiesValue(self, *keys):
         """
         Get the value of a key in the properties.
         
-        :param key: Key to get the value of.
-        :return: Value of the key in the properties.
+        :param *keys: Key(s) to get the value of.
+        :return: Value(s) of the key in the properties.
         """
-        if key not in self.properties:
-            raise KeyError(f'Key {key} not found in properties.')
-        return self.properties[key]
+        if keys.count() == 0:
+            raise ValueError('No keys provided.')
+        if keys.count() == 1:
+            key = keys[0]
+            if key not in self.properties:
+                raise KeyError(f'Key {key} not found in properties.')
+            return self.properties[key]
+        else:
+            values = []
+            for key in keys:
+                if key not in self.properties:
+                    raise KeyError(f'Key {key} not found in properties.')
+                values.append(self.properties[key])
+            return values
         
     def setPropertiesValue(self, key, value):
         """
