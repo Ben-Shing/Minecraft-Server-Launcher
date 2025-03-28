@@ -271,21 +271,22 @@ def main():
     main_logger.debug('Initializing Properties Handler...')
     properties_handler = properties.PropertiesHandler()
     main_logger.debug(f'Finding properties file in {properties_handler.propertiesPath()}')
-    if properties_handler.checkFileExist():
-        main_logger.info('Found properties file, reading...')
-        properties_handler.readPropertiesFile()
-
-        #Todo Reading properties here
-        pass
-
-
-    else:
+    if not properties_handler.checkFileExist():  # No properties file found, create new
         main_logger.warning('Could not find properties file')
         main_logger.info('Creating properties file...')
-        properties_handler.createPropertiesFile()
-        main_logger.info('Properties file created, you should edit the file before running again')
+        if properties_handler.createPropertiesFile():
+            main_logger.info('Properties file created, you should edit the file before running again')
+        else:
+            main_logger.critical('Could not create properties file')
+
         main_logger.info('Stopping...')
         return
+     
+    main_logger.info('Found properties file, reading...')
+    properties_handler.readPropertiesFile()
+
+    #Todo Reading properties here
+    pass
         
 
     

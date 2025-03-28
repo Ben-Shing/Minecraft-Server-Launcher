@@ -7,10 +7,19 @@ class ActionHandler():
         pass
 
     def cmdChoice(self, timeout=15, default='Y'):
+        """
+        Run the choice command in cmd.exe and return the choice.
+        If the timeout is reached, the default choice is selected.
+        Available choices are 'Y', 'N', and 'P' (pause).
+
+        :param timeout: The time in seconds before the default choice is selected. Default is 15 seconds.
+        :param default: The default choice if the timeout is reached. Default is 'Y'.
+        :return: The choice made by the user.
+        """
         if os.environ["Path"].find("C:\\Windows\\System32") == -1:
             os.environ["Path"] = os.environ["Path"] + ";C:\\Windows\\System32"
         process = subprocess.Popen(['cmd.exe', '/c', 'choice /C YNP /N /T {} /D {}'.format(timeout, default)], stdout=subprocess.PIPE)
-        output, error = process.communicate()
+        output, _ = process.communicate()
         choice = output.strip().decode('utf-8')
         if choice == 'P':
             self.pause()
@@ -19,6 +28,9 @@ class ActionHandler():
             return choice
 
     def pause(self):
+        """
+        Pause the program until the user presses Enter.
+        """
         input("Press Enter to continue...")
 
     def test(self):
