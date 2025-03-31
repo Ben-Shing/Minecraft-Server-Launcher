@@ -1,6 +1,6 @@
 from rich.progress import Progress
 
-class Bar():
+class RichBar():
     
     def __init__(self):
         pass

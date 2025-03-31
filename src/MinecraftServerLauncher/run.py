@@ -243,22 +243,21 @@ def main():
     # Import modules
     error_modules = []
     try:
-        from logger import color as clog
-    except ImportError as e:
-        print(e)
-        error_modules.append('logger.color')
-    try:
-        from files import properties
+        from custom import logger
     except ImportError:
-        error_modules.append('files.properties')
+        error_modules.append('logger')
     try:
-        from actions import user
+        from custom import files
     except ImportError:
-        error_modules.append('actions.user')
+        error_modules.append('files')
     try:
-        from actions import server
+        from custom import actions
     except ImportError:
-        error_modules.append('actions.server')
+        error_modules.append('actions')
+    # try:
+    #     from custom import ...
+    # except ImportError:
+    #     error_modules.append('...')
     
     if len(error_modules) > 0:
         print(f'Following modules are missing: {error_modules}')
@@ -269,18 +268,18 @@ def main():
 
     # logger.color setup
     import logging
-    logger = clog.ColorLog('main', level = logging.DEBUG)
+    logger = logger.ColorLog('main', level = logging.DEBUG)
 
 
     # actions.user setup
     logger.debug('Initializing User Action Handler...')
-    user_handler = user.ActionHandler()
+    user_handler = actions.UserHandler()
     logger.info('User Action Handler initialized')
 
 
     # file.properties setup
     logger.debug('Initializing Properties Handler...')
-    properties_handler = properties.PropertiesHandler()
+    properties_handler = files.PropertiesHandler()
     logger.debug(f'Finding properties file in {properties_handler.propertiesPath()}')
     if not properties_handler.checkFileExist():  # No properties file found, create new
         logger.warning('Could not find properties file')

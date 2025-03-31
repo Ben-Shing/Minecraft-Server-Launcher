@@ -33,11 +33,28 @@ class Log():
         self.error('This is an error message')
         self.critical('This is a critical message')
         print('Test complete.')
+    
+
+import rich.logging as rlogging
+
+class ColorLog(Log):
+
+    def __init__(self, name, level = logging.INFO):
+        self.logger = logging.getLogger(name)
+        console_handler = rlogging.RichHandler()
+        console_handler.setLevel(level)
+        self.logger.addHandler(console_handler)
+        self.logger.setLevel(level)
+        self.logger.info(f'Initializing logger: {name}, logging level: {logging.getLevelName(level)}')
+
+
 
 def testMode():
     print('Entering test mode...')
     logger = Log('test', level = logging.DEBUG)
     logger.test()
+    clogger = ColorLog('test', level = logging.DEBUG)
+    clogger.test()  
 
 if __name__ == '__main__':
     testMode()
