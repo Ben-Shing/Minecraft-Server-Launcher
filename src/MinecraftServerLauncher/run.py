@@ -125,7 +125,7 @@
 #         logger.error('No Runtime Version Selected')
 #         again = False
 #     elif properties["runtime-version"] < 0 or properties["runtime-version"] > 12:
-#         logger.error('Uncorrect Runtime Version Selected')
+#         logger.error('Incorrect Runtime Version Selected')
 #         again = False
 
 #     # Check java & others
@@ -358,7 +358,7 @@ def main():
             break
 
 
-    # Endding
+    # Ending
     logger.debug('Program ended')
     logger.info('Stopping...')
     return
