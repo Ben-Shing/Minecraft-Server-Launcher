@@ -254,10 +254,10 @@ def main():
         from custom import actions
     except ImportError:
         error_modules.append('actions')
-    # try:
-    #     from custom import ...
-    # except ImportError:
-    #     error_modules.append('...')
+    try:
+        from custom import progressBar
+    except ImportError:
+        error_modules.append('progressBar')
     
     if len(error_modules) > 0:
         print(f'Following modules are missing: {error_modules}')
@@ -266,20 +266,50 @@ def main():
         return
 
 
-    # logger.color setup
+    # ColorLog setup
     import logging
     logger = logger.ColorLog('main', level = logging.DEBUG)
 
 
-    # actions.user setup
+    # ProgressBar setup
+    logger.debug('Initializing Progress Bar...')
+    handler_progress_bar = progressBar.RichBar()
+    properties_progress_bar = progressBar.RichBar()
+    logger.info('Progress Bar initialized')
+
+    handler_progress_bar.create('Initializing Handlers',total=3)
+
+    # import time
+    # time.sleep(0.9)
+
+
+    # UserHandler setup
     logger.debug('Initializing User Action Handler...')
     user_handler = actions.UserHandler()
     logger.info('User Action Handler initialized')
+    handler_progress_bar.update(1)
+
+    # time.sleep(0.5)
 
 
-    # file.properties setup
+    # ServerHandler setup
+    logger.debug('Initializing Server Action Handler...')
+    server_handler = actions.ServerHandler()
+    logger.info('Server Action Handler initialized')
+    handler_progress_bar.update(2)
+
+    # time.sleep(0.7)
+
+
+    # PropertiesHandler setup
     logger.debug('Initializing Properties Handler...')
     properties_handler = files.PropertiesHandler()
+    logger.info('Properties Handler initialized')
+    handler_progress_bar.update(3)
+    # time.sleep(0.5)
+    handler_progress_bar.complete()
+    # time.sleep(1)
+
     logger.debug(f'Finding properties file in {properties_handler.propertiesPath()}')
     if not properties_handler.checkFileExist():  # No properties file found, create new
         logger.warning('Could not find properties file')
@@ -288,7 +318,6 @@ def main():
             logger.info('Properties file created, you should edit the file before running again')
         else:
             logger.critical('Could not create properties file')
-
         logger.info('Stopping...')
         return
     
@@ -303,28 +332,48 @@ def main():
     # Check properties
     stop = False
     logger.debug('Checking properties...')
+    properties_progress_bar.create('Checking properties', total=6)
+    # time.sleep(0.5)
     if server_properties['server-name'] == '':
         logger.warning(f'Server name is not set, setting to default name: Minecraft Server Launcher - {server_properties["launcher-version"]}')
         server_properties['server-name'] = f'Minecraft Server Launcher - {server_properties["launcher-version"]}'
+    properties_progress_bar.update(1)
+    # time.sleep(0.5)
+
     if server_properties['min-ram'] == '':
         logger.warning('Missing minRam value, setting minRam to 512M')
         server_properties['min-ram'] = '512M'
+    properties_progress_bar.update(2)
+    # time.sleep(0.5)
+    
     if server_properties['max-ram'] == '':
         logger.warning('Missing maxRam value, setting maxRam to 1G')
         server_properties['max-ram'] = '1G'
+    properties_progress_bar.update(3)
+    # time.sleep(0.5)
+
     if server_properties['custom-jdk'] == '':
         logger.info('Custom JDK not set, using default JDK')
+    properties_progress_bar.update(4)
+    # time.sleep(0.5)
+
     if server_properties['auto-restart'] == '':
         logger.warning('Auto-restart not set, default to False (Server will not restart automatically)')
         server_properties['auto-restart'] = 'False'
+    properties_progress_bar.update(5)
+    # time.sleep(0.5)
+
     if server_properties['auto-restart'].lower() not in ['true', 'false']:
         logger.error('Auto-restart value is not valid, Expected: True or False')
         stop = True
+    properties_progress_bar.update(6)
+    # time.sleep(0.5)
     
     if stop:
         logger.critical('Got invalid properties, stopping...')
         return
     
+    properties_progress_bar.complete()
     logger.info('Properties checking complete')
 
 
