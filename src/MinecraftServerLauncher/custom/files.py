@@ -102,9 +102,124 @@ class PropertiesHandler():
         for key, value in properties.items():
             print(f'{key}={value}')
 
+
+class ServerHandler():
+    """
+    Handle Minecraft server.
+    """
+
+    def __init__(self, custom_jdk: str = None, system: str = 'win'):
+        self.custom_jdk = custom_jdk
+        self.system = system
+        self.server = None
+
+    def locateServer(self):
+        """
+        Locate the Minecraft server executable.
+        """
+        # Check if the server folder exists
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        server_folder_path = os.path.join(current_dir, 'server')
+        if not os.path.exists(server_folder_path):
+            raise FileNotFoundError(f"Server folder not found: {server_folder_path}")
+
+        #  Finding old forge server jar file
+        for root, dirs, files in os.walk(server_folder_path):
+            for file in files:
+                if file.startswith('forge-') and file.endswith('.jar'):
+                    self.server = os.path.join(root, file)
+                    self.version = file.split('-')[1]
+                    self.loader = 'forge'
+                    self.loader_version = file.split('-')[2]
+                    self.forge = 'old'
+                    break
+
+        #  Finding new forge server jar file
+        sub_path = os.path.join('libraries', 'net', 'minecraftforge', 'forge')
+        if os.path.exists(sub_path):
+            for root, dirs, files in os.walk(sub_path):
+                for file in files:
+                    if file.endswith('.jar'):
+                        self.server = os.path.join(root, file)
+                        self.version = file.split('-')[1]
+                        self.loader = 'forge'
+                        self.loader_version = file.split('-')[2]
+                        self.forge = 'new'
+                        break
+
+        # Finding fabric server jar file
+        server_executable = os.path.join(server_folder_path, 'fabric-server-launch.jar')
+        if os.path.isfile(server_executable):
+            self.server = server_executable
+            self.loader = 'fabric'
+
+        # Finding spigot server jar file
+        # TODO: Need Test
+        server_executable = os.path.join(server_folder_path, 'spigot.jar')
+        if os.path.isfile(server_executable):
+            self.server = server_executable
+            self.loader = 'spigot'
+        
+        # Finding paper server jar file
+        # TODO: Need Test
+        server_executable = os.path.join(server_folder_path, 'paper.jar')
+        if os.path.isfile(server_executable):
+            self.server = server_executable
+            self.loader = 'paper'
+        
+        # Finding vanilla server jar file
+        server_executable = os.path.join(server_folder_path, 'server.jar')
+        if os.path.isfile(server_executable):
+            self.server = server_executable
+            self.loader = 'vanilla'
+
+        # No server executable found
+        if not self.server:
+            raise FileNotFoundError("No server executable found in the server folder.")
+
+        return self.server
+
+
+    def startServer(self, min_ram: str = None, max_ram: str = None, *args):
+        """
+        Start the Minecraft server.
+        """
+        # Check if the server is located
+        if not self.server:
+            raise RuntimeError("Server not located. Please locate the server before starting.")
+        
+        # Check if custom JDK is provided
+        if self.custom_jdk:
+            java = self.custom_jdk
+        else:
+            java = 'java'
+        
+        # Parsing command for different loaders
+        # * Only vanilla, fabric and forge are done currently
+        if self.loader == 'vanilla' or self.loader == 'fabric':
+            command = f'{java} -Xms{min_ram} -Xmx{max_ram} -jar {self.server} nogui {" ".join(args)}'
+        elif self.loader == 'forge':
+            if self.forge == 'old':
+                command = f'{java} -Xms{min_ram} -Xmx{max_ram} -jar {self.server} nogui {" ".join(args)}'
+            elif self.forge == 'new':
+                command = f'{java} -Xms{min_ram} -Xmx{max_ram} @libraries/net/minecraftforge/forge/{self.version}-{self.loader_version}-{self.system}_args.txt nogui {" ".join(args)} %*'
+        
+
+
+        os.system(command)
+
+
+    def test(self):
+        print('Testing server handler:')
+        print('Start server:')
+        self.startServer()
+        print('Test complete.')
+
+
 def testMode():
     print('Entering test mode...')
     PropertiesHandler().test()
+    ServerHandler().test()
 
 if __name__ == '__main__':
     testMode()

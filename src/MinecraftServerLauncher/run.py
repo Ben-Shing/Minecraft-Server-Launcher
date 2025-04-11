@@ -243,27 +243,16 @@ def main():
     # Import modules
     error_modules = []
     try:
-        from custom import logger
-    except ImportError:
-        error_modules.append('logger')
-    try:
-        from custom import files
-    except ImportError:
-        error_modules.append('files')
-    try:
         from custom import actions
-    except ImportError:
-        error_modules.append('actions')
-    try:
+        from custom import files
+        from custom import logger
         from custom import progressBar
-    except ImportError:
-        error_modules.append('progressBar')
-    
-    if len(error_modules) > 0:
-        print(f'Following modules are missing: {error_modules}')
-        print(f'Please check your installation')
+    except ImportError as e:
+        print(f'Error: {e}')
+        print('Seems that you are missing some files')
+        print('Please check your installation')
         print('Stopping...')
-        return
+        return       
 
 
     # ColorLog setup
@@ -294,7 +283,7 @@ def main():
 
     # ServerHandler setup
     logger.debug('Initializing Server Action Handler...')
-    server_handler = actions.ServerHandler()
+    server_handler = files.ServerHandler()
     logger.info('Server Action Handler initialized')
     handler_progress_bar.update(2)
 
@@ -392,6 +381,20 @@ def main():
 
         ###########################
         # TODO: Start server Here #
+        ###########################
+
+        try:
+            server_location = server_handler.locateServer()
+            logger.info(f'Found server: {server_location}')
+        except FileNotFoundError as e:
+            logger.critical(e)
+            logger.critical('Stopping...')
+            return
+        
+        logger.info('Starting server...')
+        server_handler.startServer(min_ram=server_properties['min-ram'], max_ram=server_properties['max-ram'], args=[])
+        
+
         ###########################
 
         # Server Stopped
